@@ -278,18 +278,23 @@ def handle_data():
             "WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) AND "
             "  is_app_user = 1", access_token)
         try:
-            for f in app_friends['data']:
-                print f, 'fffffffffffffffffff'
-                if f.lower() == data:
-                    agg.addCatalog(catalog.Catalog(f.uid))
-                    print 'match'
+            for f in app_friends:
+                print type(f)
+                if f['name'].lower() == data.lower():
+                    print 'hereeeeeeeeeeeee\n\n'
+                    for cat in catalog.list_catalogs():
+                        print cat.name, f['uid'], "\n\n\n"
+                        if str(cat.name) == str(f['uid']):
+                            c = cat
+                    agg.addCatalog(c)
         except:
             agg = SuperUser('name')
-            for f in friends:
-                if f.lower() == data:
-                    agg.addCatalog(catalog.Catalog(f.uid))
-                    print 'match'
-        print 'here'
+            for f in app_friends:
+                if f['name'].lower() == data.lower():
+                    for cat in catalog.list_catalogs():
+                        if str(cat.name) == str(f['uid']):
+                            c = cat
+                    agg.addCatalog(c)
         agg.print_catalog()
 
         SEND_TO = ('https://www.facebook.com/dialog/send?'

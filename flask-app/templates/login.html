@@ -4,13 +4,25 @@
 
 
   <div id="fb-root">
-  	<p class="text-center">
-  		<h1>Welcome to PWF!</h1>
-   			We make playlists for groups of people based on their facebook likes. Please login so that we know what kind of music you like :)
+  	<p class="text-center" style="font-size:30px">
+  		<strong>Welcome to PWF!</strong>
+  	</p>
+
+  	</br>
+
+  	<p class="text-center,lead">
+  		<blockquote style="font-size:20px">
+   			We make playlists for groups of people based on their facebook likes. Please login so that we know your musical taste :)
+   		</blockquote>
 	</p>
   </div>
-  <div id="login-flow">
-    <fb:login-button perms="email,offline_access,user_likes,friends_likes" show-faces="false"></fb:login-button>
+
+  </br>
+
+  <div id="login-flow" class="container" style="width:500px;background:lightGray">
+  	<div class="alert-message block-message info" style="margin: auto; width: 150px;">
+    	<fb:login-button perms="email,offline_access,user_likes,friends_likes" show-faces="false" size="xlarge" ></fb:login-button>
+    </div>
   </div>
 
 {% endblock %}
