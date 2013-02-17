@@ -10,6 +10,7 @@ import hashlib
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 import requests
+
 from flask import Flask, request, redirect, render_template, url_for
 
 # Heroku IDs
@@ -183,7 +184,7 @@ def index():
 
         me = fb_call('me', args={'access_token': access_token})
         fb_app = fb_call(FB_APP_ID, args={'access_token': access_token})
-        likes = fb_call('me/likes',
+        music = fb_call('me/music',
                         args={'access_token': access_token, 'limit': 4})
         friends = fb_call('me/friends',
                           args={'access_token': access_token, 'limit': 4})
@@ -207,10 +208,10 @@ def index():
         url = request.url
 
         return render_template(
-            'index.html', app_id=FB_APP_ID, token=access_token, likes=likes,
+            'index.html', app_id=FB_APP_ID, token=access_token, music=music,
             friends=friends, photos=photos, app_friends=app_friends, app=fb_app,
             me=me, POST_TO_WALL=POST_TO_WALL, SEND_TO=SEND_TO, url=url,
-            channel_url=channel_url, name=FB_APP_NAME)
+            channel_url=channel_url, name=FB_APP_NAME,songIDList="40pPI2TbaYSZlKfV44HRjn,7LVHVU3tWfcxj5aiPFEW4Q,6IjH4TN74SuUVEoXzOuTnY,78kYERG8Ph4s0D8SAmaW4r,5LOaKdW9D2Gl9neAN94NbR")
     else:
         return render_template('login.html', app_id=FB_APP_ID, token=access_token, url=request.url, channel_url=channel_url, name=FB_APP_NAME)
 
