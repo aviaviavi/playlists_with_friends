@@ -6,30 +6,27 @@
   <!-- the user's images without having to download or prepare -->
   <!-- them ahead of time -->
 
-  <p id="picture" style="background-image: url(https://graph.facebook.com/me/picture?type=normal&access_token={{token}})"></p>
-<iframe src="https://embed.spotify.com/?uri=spotify:trackset:Sexy:{{songIDList}}" frameborder="0" allowtransparency="true"></iframe>
-  <div>
-    <h1>Welcome to index.html FaceBook sort of, <strong>{{me.name}}</strong></h1>
-    <p class="tagline">
-      This is your app
-      <a href="{{app.link}}">{{app.name}}</a>
-    </p>
+
+  <div class="container">
+    <h2>Hi <em><strong>{{me.first_name}}</strong> </em>! Here's your playlist</h2>
+
+    <iframe src="https://embed.spotify.com/?uri=spotify:trackset:Sexy:{{songIDList}}" frameborder="0" allowtransparency="true" width="400" height="100"></iframe>
+
+    <form class="form-search">
+      <input type="text" class="input-large search-query" placeholder="Type Friend's name">
+      <button type="submit" class="btn">Add his/her music</button>
+    </form>
+    
     <div id="share-app">
-      <p>Share your app:</p>
       <ul>
         <li>
           <a href="#" class="facebook-button" id="postToWall" data-url="{{ url }}">
-            <span class="plus">Post to Wall</span>
-          </a>
-        </li>
-        <li>
-          <a href="#" class="facebook-button speech-bubble" id="sendToFriends" data-url="{{ url }}">
-            <span class="speech-bubble">Send Message</span>
+            <span class="plus">Post to my Wall</span>
           </a>
         </li>
         <li>
           <a href="#" class="facebook-button apprequests" id="sendRequest" data-message="Test this awesome app">
-            <span class="apprequests">Send Requests</span>
+            <span class="apprequests">Invite Friends</span>
           </a>
         </li>
       </ul>
@@ -42,7 +39,8 @@
 
 {% block content %}
 <section class="clearfix" id="samples">
-      <h1>Examples of the Facebook Graph API</h1>
+      <h2>Here's what facebook also told us:</h2>
+      <!--      
       <div class="list">
         <h3>A few of your friends</h3>
         <ul class="friends">{% for friend in friends.data %}
@@ -53,6 +51,7 @@
           </a>
         </li>{% endfor %}</ul>
       </div>
+      
       <div class="list inline">
         <h3>Recent photos</h3>
         <ul class="photos">
@@ -69,8 +68,9 @@
           {% endfor %}
         </ul>
       </div>
+      -->
       <div class="list">
-        <h3>Things you like</h3>
+        <h3>Artists you like</h3>
         <ul class="things">{% for like in music.data %}
         <li>
           <a href="#" onclick="window.open('http://www.facebook.com/{{like.id}}')">
@@ -80,7 +80,7 @@
         </li>{% endfor %}</ul>
       </div>
       <div class="list">
-        <h3>Friends using this app</h3>
+        <h3>Friends using our app</h3>
         <ul class="friends">{% for friend in app_friends %}
         <li>
           <a href="#" onclick="window.open('http://www.facebook.com/{{friend.uid}}')">

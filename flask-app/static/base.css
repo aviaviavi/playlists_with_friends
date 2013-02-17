@@ -68,12 +68,12 @@ header .tagline {
 }
 
 #share-app {
-  float: right;
+  margin:auto;
   width: 344px;
 }
 
 #share-app ul {
-  float: right;
+  float: left;
 }
 
 #share-app p {

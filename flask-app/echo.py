@@ -2,7 +2,7 @@ from pyechonest import *
 from StringIO import StringIO
 import pickle
 import facebook
-import pycurl
+#import pycurl
 from Queue import Queue
 
 config.ECHO_NEST_API_KEY="8IOOXXQIU4NHRY5DY"

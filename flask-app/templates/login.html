@@ -3,10 +3,14 @@
 {% block topbar %}
 
 
-  <div id="fb-root"></div>
-  <h1>Welcome to PWF! We match your music tastes with your friends. Please login with facebook so that we know what kind of music you like :)</h1>
+  <div id="fb-root">
+  	<p class="text-center">
+  		<h1>Welcome to PWF!</h1>
+   			We make playlists for groups of people based on their facebook likes. Please login so that we know what kind of music you like :)
+	</p>
+  </div>
   <div id="login-flow">
-    <fb:login-button perms="email,offline_access,user_likes,friends_likes" show-faces="true"></fb:login-button>
+    <fb:login-button perms="email,offline_access,user_likes,friends_likes" show-faces="false"></fb:login-button>
   </div>
 
 {% endblock %}
