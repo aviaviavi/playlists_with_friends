@@ -12,8 +12,8 @@
 
     <iframe src="https://embed.spotify.com/?uri=spotify:trackset:Sexy:{{songIDList}}" frameborder="0" allowtransparency="true" width="400" height="100"></iframe>
 
-    <form class="form-search">
-      <input type="text" class="input-large search-query" placeholder="Type Friend's name">
+    <form class="form-search" action="/input_friends" method="post">
+      <input type="text" name='friend_input' id='friend_input' class="input-large search-query" placeholder="Type Friend's name">
       <button type="submit" class="btn">Add his/her music</button>
     </form>
     
