@@ -130,7 +130,7 @@ class SuperUser(User):
     def __init__(self, name): # list of catalogs
         self.catalog = create_new_profile(name)
         self.cat_id = self.catalog.id
-        self.id_track = 0
+        self.item_id = 0
         self.plist = None
 
     def addCatalog(self,catalog):
