@@ -67,6 +67,9 @@ class User:
 		self.catalog.update(item)
 		self.item_id+=1
 
+	def print_catalog():
+		print self.catalog.get_item_dicts()
+
 class ExistingUser(User):
 	def __init__(self, name):
 		self.cat_id = user_info[name]
