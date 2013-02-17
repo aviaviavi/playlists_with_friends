@@ -14,11 +14,11 @@ import requests
 from flask import Flask, request, redirect, render_template, url_for
 
 # Heroku IDs
-#os.environ["FACEBOOK_APP_ID"] = "465186096880305"
-#os.environ["FACEBOOK_SECRET"] = "af473c5281026642a9a6afbdcdb72966"
+os.environ["FACEBOOK_APP_ID"] = "465186096880305"
+os.environ["FACEBOOK_SECRET"] = "af473c5281026642a9a6afbdcdb72966"
 # Local IDs. Comment out before sending to heroku
-os.environ["FACEBOOK_APP_ID"] = "478885362170785"
-os.environ["FACEBOOK_SECRET"] = "344ea24e89a57d03084047d2a47045a3"
+#os.environ["FACEBOOK_APP_ID"] = "478885362170785"
+#os.environ["FACEBOOK_SECRET"] = "344ea24e89a57d03084047d2a47045a3"
 
 FB_APP_ID = os.environ.get('FACEBOOK_APP_ID')
 requests = requests.session()
