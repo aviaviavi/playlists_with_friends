@@ -1,6 +1,7 @@
 from pyechonest import *
 from StringIO import StringIO
 import pickle
+import facebook
 
 config.ECHO_NEST_API_KEY="8IOOXXQIU4NHRY5DY"
 
@@ -46,6 +47,7 @@ class User:
 		except:
 			print 'artist not found'
 
+
 	def make_playlist(self):
 		if self.plist:
 			self.plist.delete()
@@ -55,8 +57,20 @@ class User:
 			out.append(self.plist.get_next_songs(1))
 		return out
 
-	def edit_playlist(self, playlist):
-		return 0
+	def edit_playlist(self, attr):
+		if attr == 'dance':
+			self.playlist.steer(min_danceability=.5)
+		elif attr == 'not_dance':
+			self.playlist.steer(max_danceability=.5)
+		elif attr == 'energy':
+			self.playlist.steer(min_energy=.5)
+		elif attr == 'not_energy':
+			self.playlist.steer(max_energy=.5)
+		elif attr == 'hottt':
+			self.playlist.steer(min_hotttnesss=.5)
+		elif attr == 'not_hottt':
+			self.playlist.steer(max_hotttnesss=.5)
+
 
 	def add_song(self, song_name, artist_name):
 		try:
@@ -75,6 +89,16 @@ class User:
 
 	def print_catalog(self):
 		print self.catalog.get_item_dicts()
+
+	def get_fb_likes(self):
+		graph = facebook.GraphAPI(oauth_access_token)
+		music = graph.get_connections("me", "music")
+		for band in music:
+			try:
+				self.add_artist(band)
+				print band['name'] + " added!"
+			except:
+				continue
 
 class ExistingUser(User):
 	def __init__(self, name):
