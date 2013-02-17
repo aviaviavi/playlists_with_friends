@@ -3,6 +3,7 @@ from StringIO import StringIO
 import pickle
 import facebook
 import pycurl
+from Queue import Queue
 
 config.ECHO_NEST_API_KEY="8IOOXXQIU4NHRY5DY"
 
@@ -62,10 +63,8 @@ class User:
 		if self.plist:
 			self.plist.delete()
 		self.plist = playlist.Playlist(type='catalog-radio', seed_catalog=self.cat_id, buckets=['id:spotify-WW'])
-		out = []
-		for i in range(5):
-			out.append(self.plist.get_next_songs(1))
-		return out
+		output = self.plist.get_next_songs(15)
+		return output
 
 	def edit_playlist(self, attr):
 		if attr == 'dance':
@@ -80,7 +79,7 @@ class User:
 			self.playlist.steer(min_hotttnesss=.5)
 		elif attr == 'not_hottt':
 			self.playlist.steer(max_hotttnesss=.5)
-
+		self.playPlaylist()
 
 	def add_song(self, song_name, artist_name):
 		try:
@@ -109,7 +108,7 @@ class User:
 				continue
 
 	def playPlaylist(self):
-		playlist = self.make_playlist()
+		playlist = self.plist.get_next_songs(15)
 		out = ''
 		for songList in playlist:
 			spotID = get_spotify_id(songList[0])
