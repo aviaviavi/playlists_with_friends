@@ -33,15 +33,18 @@ class User:
 		pkl_file.close()
 
 	def add_artist(self, artist_name):
-		artist_object = artist.Artist(artist_name)
-		item = [{ 'item':
-			{
-				'item_id' : str(self.item_id),
-				'artist_name' : artist_object.name
-			}
-		}]
-		self.catalog.update(item)
-		self.item_id += 1
+		try:
+			artist_object = artist.Artist(artist_name)
+			item = [{ 'item':
+				{
+					'item_id' : str(self.item_id),
+					'artist_name' : artist_object.name
+				}
+			}]
+			self.catalog.update(item)
+			self.item_id += 1
+		except:
+			print 'artist not found'
 
 	def make_playlist(self):
 		if self.plist:
@@ -56,27 +59,33 @@ class User:
 		return 0
 
 	def add_song(self, song_name, artist_name):
-		songID = song.search(title=song_name, artist=artist_name)[0].id
-		song_object = song.Song(songID)
-		item = [{'item':
-			{
-				'item_id':str(self.item_id),
-				'song_name': song_object.title
-			}
-		}]
-		self.catalog.update(item)
-		self.item_id+=1
+		try:
+			songID = song.search(title=song_name, artist=artist_name)[0].id
+			song_object = song.Song(songID)
+			item = [{'item':
+				{
+					'item_id':str(self.item_id),
+					'song_name': song_object.title
+				}
+			}]
+			self.catalog.update(item)
+			self.item_id+=1
+		except:
+			print 'song not found'
 
 	def print_catalog(self):
 		print self.catalog.get_item_dicts()
 
 class ExistingUser(User):
 	def __init__(self, name):
-		self.cat_id = user_info[name]
-		self.name = name
-		self.catalog = catalog.Catalog(self.cat_id)
-		self.item_id = len(self.catalog.get_item_dicts())
-		self.plist = None
+		try:
+			self.cat_id = user_info[name]
+			self.name = name
+			self.catalog = catalog.Catalog(self.cat_id)
+			self.item_id = len(self.catalog.get_item_dicts())
+			self.plist = None
+		except:
+			print 'user not found'
 
 class SuperUser(User):
     def __init__(self, name): # list of catalogs
@@ -84,6 +93,7 @@ class SuperUser(User):
         self.cat_id = self.catalog.id
         self.id_track = 0
         self.plist = None
+
     def addCatalog(self,catalog):
         for item in catalog.get_item_dicts(results=100):
             self.catalog.update([{'action':'update','item':item['request']}])
@@ -93,9 +103,3 @@ class SuperUser(User):
 
 avi = ExistingUser('avi')
 oren = ExistingUser('oren')
-
-us = SuperUser('us')
-avi.add_artist('Tool')
-us.addCatalog(avi.catalog)
-us.addCatalog(oren.catalog)
-print us.make_playlist()
