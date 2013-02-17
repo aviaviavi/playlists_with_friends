@@ -184,8 +184,11 @@ def index():
 
         me = fb_call('me', args={'access_token': access_token})
         fb_app = fb_call(FB_APP_ID, args={'access_token': access_token})
+        identifier = fb_call('me?fields=id', 
+                        args={'access_token': access_token})
+        print("\nname is {0}\n\n".format(identifier))
         music = fb_call('me/music',
-                        args={'access_token': access_token, 'limit': 4})
+                        args={'access_token': access_token})
         friends = fb_call('me/friends',
                           args={'access_token': access_token, 'limit': 4})
         photos = fb_call('me/photos',
@@ -206,6 +209,13 @@ def index():
                    % (redir, FB_APP_ID, get_home()))
 
         url = request.url
+        try:
+            cat_id = user_info[identifier['id']]
+            user_object = ExistingUser(identifier['id'])
+        except:
+            user_object = User(identifier['id'])
+            user_object.get_fb_likes(music)
+        
 
         return render_template(
             'index.html', app_id=FB_APP_ID, token=access_token, music=music,

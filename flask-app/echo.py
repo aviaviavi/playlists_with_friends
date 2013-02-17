@@ -2,6 +2,7 @@ from pyechonest import *
 from StringIO import StringIO
 import pickle
 import facebook
+import pycurl
 
 config.ECHO_NEST_API_KEY="8IOOXXQIU4NHRY5DY"
 
@@ -9,6 +10,10 @@ pkl_file = open('user_info.pkl', 'r')
 user_info = pickle.load(pkl_file)
 pkl_file.close()
 
+def get_spotify_id(spot_song):
+	out = spot_song.get_tracks('spotify-WW')[0]['foreign_id'][17:]
+	#print(out)
+	return out
 def create_new_profile(name):
 	c = catalog.Catalog(name, 'general')
 	return c
@@ -25,6 +30,7 @@ class User:
 		pickle.dump(user_info, pkl_file)
 		pkl_file.close()
 		self.plist = None
+		print 'user created!', name
 
 	def delete(self):
 		self.catalog.delete()
@@ -51,7 +57,7 @@ class User:
 	def make_playlist(self):
 		if self.plist:
 			self.plist.delete()
-		self.plist = playlist.Playlist(type='catalog-radio', seed_catalog=self.cat_id)
+		self.plist = playlist.Playlist(type='catalog-radio', seed_catalog=self.cat_id, buckets=['id:spotify-WW'])
 		out = []
 		for i in range(5):
 			out.append(self.plist.get_next_songs(1))
@@ -90,15 +96,24 @@ class User:
 	def print_catalog(self):
 		print self.catalog.get_item_dicts()
 
-	def get_fb_likes(self):
-		graph = facebook.GraphAPI(oauth_access_token)
-		music = graph.get_connections("me", "music")
-		for band in music:
+	def get_fb_likes(self, music_tastes):
+		for band in music_tastes['data']:
 			try:
-				self.add_artist(band)
+				self.add_artist(band['name'])
 				print band['name'] + " added!"
 			except:
 				continue
+
+	def playPlaylist(self):
+		playlist = self.make_playlist()
+		out = ''
+		for songList in playlist:
+			spotID = get_spotify_id(songList[0])
+			out += spotID
+			out+=','
+
+		return out[:-1]
+		
 
 class ExistingUser(User):
 	def __init__(self, name):
@@ -109,7 +124,9 @@ class ExistingUser(User):
 			self.item_id = len(self.catalog.get_item_dicts())
 			self.plist = None
 		except:
-			print 'user not found'
+
+			print name, ': user not found'
+			return None
 
 class SuperUser(User):
     def __init__(self, name): # list of catalogs
@@ -125,5 +142,4 @@ class SuperUser(User):
             item['request']['item_id'] = unicode(self.i+self.id_track)
         self.id_track += len(catalog.get_item_dicts(results=100))
 
-avi = ExistingUser('avi')
-oren = ExistingUser('oren')
+
