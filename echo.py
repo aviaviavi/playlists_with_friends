@@ -2,6 +2,7 @@ from pyechonest import *
 from StringIO import StringIO
 import pickle
 import facebook
+import pycurl
 
 config.ECHO_NEST_API_KEY="8IOOXXQIU4NHRY5DY"
 
@@ -51,7 +52,7 @@ class User:
 	def make_playlist(self):
 		if self.plist:
 			self.plist.delete()
-		self.plist = playlist.Playlist(type='catalog-radio', seed_catalog=self.cat_id)
+		self.plist = playlist.Playlist(type='catalog-radio', seed_catalog=self.cat_id, buckets=['id:spotify-WW'])
 		out = []
 		for i in range(5):
 			out.append(self.plist.get_next_songs(1))
@@ -127,3 +128,18 @@ class SuperUser(User):
 
 avi = ExistingUser('avi')
 oren = ExistingUser('oren')
+
+"http://developer.echonest.com/api/v4/song/search?api_key={0}&format=json&results=1&artist=radiohead&title=karma%20police&bucket=id:spotify-WW&bucket=tracks&limit=true"
+ 	 	
+def get_spotify_id(band, song):
+	band = band.replace(" ", "%20")
+	song = song.replace(" ", "%20")
+	storage = StringIO()
+	c = pycurl.Curl() 	 	
+	c.setopt(c.URL, 'http://developer.echonest.com/api/v4/song/search')	 	
+	c.setopt(c.WRITEFUNCTION, storage.write) 	 	
+	c.setopt(c.POSTFIELDS, 'api_key={0}&format=json&results=1&artist={1}&title={2}&bucket=id:spotify-WW&bucket=tracks&limit=true'.format(config.ECHO_NEST_API_KEY, band, song))	 	
+	c.setopt(c.VERBOSE, True)	 	
+	c.perform()	 	
+	c.close() 	
+	return storage.getvalue()
