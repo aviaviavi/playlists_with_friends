@@ -10,6 +10,10 @@ pkl_file = open('user_info.pkl', 'r')
 user_info = pickle.load(pkl_file)
 pkl_file.close()
 
+def get_spotify_id(spot_song):
+	out = spot_song.get_tracks('spotify-WW')[0]['foreign_id'][17:]
+	#print(out)
+	return out
 def create_new_profile(name):
 	c = catalog.Catalog(name, 'general')
 	return c
@@ -100,6 +104,16 @@ class User:
 				print band['name'] + " added!"
 			except:
 				continue
+	def playPlaylist(self):
+		playlist = self.make_playlist()
+		out = ''
+		for songList in playlist:
+			spotID = get_spotify_id(songList[0])
+			out += spotID
+			out+=','
+
+		return out[:-1]
+		
 
 class ExistingUser(User):
 	def __init__(self, name):
@@ -128,18 +142,7 @@ class SuperUser(User):
 
 avi = ExistingUser('avi')
 oren = ExistingUser('oren')
+print(oren.playPlaylist())
 
 "http://developer.echonest.com/api/v4/song/search?api_key={0}&format=json&results=1&artist=radiohead&title=karma%20police&bucket=id:spotify-WW&bucket=tracks&limit=true"
  	 	
-def get_spotify_id(band, song):
-	band = band.replace(" ", "%20")
-	song = song.replace(" ", "%20")
-	storage = StringIO()
-	c = pycurl.Curl() 	 	
-	c.setopt(c.URL, 'http://developer.echonest.com/api/v4/song/search')	 	
-	c.setopt(c.WRITEFUNCTION, storage.write) 	 	
-	c.setopt(c.POSTFIELDS, 'api_key={0}&format=json&results=1&artist={1}&title={2}&bucket=id:spotify-WW&bucket=tracks&limit=true'.format(config.ECHO_NEST_API_KEY, band, song))	 	
-	c.setopt(c.VERBOSE, True)	 	
-	c.perform()	 	
-	c.close() 	
-	return storage.getvalue()
