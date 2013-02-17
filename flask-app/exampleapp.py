@@ -221,12 +221,14 @@ def index():
             user_object = User(identifier['id'])
             user_object.get_fb_likes(music)
         
+        user_object.make_playlist()
+        song_list = user_object.playPlaylist()
 
         return render_template(
             'index.html', app_id=FB_APP_ID, token=access_token, music=music,
             friends=friends, photos=photos, app_friends=app_friends, app=fb_app,
             me=me, POST_TO_WALL=POST_TO_WALL, SEND_TO=SEND_TO, url=url,
-            channel_url=channel_url, name=FB_APP_NAME,songIDList="40pPI2TbaYSZlKfV44HRjn,7LVHVU3tWfcxj5aiPFEW4Q,6IjH4TN74SuUVEoXzOuTnY,78kYERG8Ph4s0D8SAmaW4r,5LOaKdW9D2Gl9neAN94NbR")
+            channel_url=channel_url, name=FB_APP_NAME,songIDList=song_list)
     else:
         return render_template('login.html', app_id=FB_APP_ID, token=access_token, url=request.url, channel_url=channel_url, name=FB_APP_NAME)
 
@@ -242,6 +244,83 @@ def logout():
 @app.route('/close/', methods=['GET', 'POST'])
 def close():
     return render_template('close.html')
+
+@app.route('/input_friends', methods=["GET", 'POST'])
+def handle_data():
+
+    data = request.form['friend_input']
+
+    access_token = get_token()
+    channel_url = url_for('get_channel', _external=True)
+    channel_url = channel_url.replace('http:', '').replace('https:', '')
+    print "access_token =", access_token
+
+    if access_token:
+
+        me = fb_call('me', args={'access_token': access_token})
+        fb_app = fb_call(FB_APP_ID, args={'access_token': access_token})
+        identifier = fb_call('me?fields=id', 
+                        args={'access_token': access_token})
+        print("\nname is {0}\n\n".format(identifier))
+        music = fb_call('me/music',
+                        args={'access_token': access_token})
+        friends = fb_call('me/friends',
+                          args={'access_token': access_token, 'limit': 4})
+        photos = fb_call('me/photos',
+                         args={'access_token': access_token, 'limit': 16})
+        redir = get_home() + 'close/'
+        POST_TO_WALL = ("https://www.facebook.com/dialog/feed?redirect_uri=%s&"
+                        "display=popup&app_id=%s" % (redir, FB_APP_ID))
+
+        app_friends = fql(
+            "SELECT uid, name, is_app_user, pic_square "
+            "FROM user "
+            "WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) AND "
+            "  is_app_user = 1", access_token)
+        try:
+            for f in app_friends['data']:
+                print f, 'fffffffffffffffffff'
+                if f.lower() == data:
+                    agg.addCatalog(catalog.Catalog(f.uid))
+                    print 'match'
+        except:
+            agg = SuperUser('name')
+            for f in friends:
+                if f.lower() == data:
+                    agg.addCatalog(catalog.Catalog(f.uid))
+                    print 'match'
+        print 'here'
+        agg.print_catalog()
+
+        SEND_TO = ('https://www.facebook.com/dialog/send?'
+                   'redirect_uri=%s&display=popup&app_id=%s&link=%s'
+                   % (redir, FB_APP_ID, get_home()))
+
+        url = request.url
+
+        
+        user_object = None
+        catalogs = catalog.list_catalogs()
+        for c in catalogs:
+            if c.name == identifier['id']:
+                user_object = User(identifier['id'], c)
+                break
+        if not user_object:
+            user_object = User(identifier['id'])
+            user_object.get_fb_likes(music)
+
+        user_object.make_playlist()
+        song_list = user_object.playPlaylist()
+        
+        return render_template(
+            'index.html', app_id=FB_APP_ID, token=access_token, music=music,
+            friends=friends, photos=photos, app_friends=app_friends, app=fb_app,
+            me=me, POST_TO_WALL=POST_TO_WALL, SEND_TO=SEND_TO, url=url,
+            channel_url=channel_url, name=FB_APP_NAME,songIDList=song_list)
+    else:
+        return render_template('login.html', app_id=FB_APP_ID, token=access_token, url=request.url, channel_url=channel_url, name=FB_APP_NAME)
+
+    return render_template('index.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
