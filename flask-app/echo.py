@@ -47,7 +47,7 @@ class User:
 	def add_artist(self, artist_name):
 		try:
 			artist_object = artist.Artist(artist_name)
-			item = [{ 'item':
+			item = [{ 'action':'update', 'item':
 				{
 					'item_id' : str(self.item_id),
 					'artist_name' : artist_object.name
@@ -63,7 +63,7 @@ class User:
 		if self.plist:
 			self.plist.delete()
 		self.plist = playlist.Playlist(type='catalog-radio', seed_catalog=self.cat_id, buckets=['id:spotify-WW'])
-		output = self.plist.get_next_songs(15)
+		output = self.plist.get_next_songs(5)
 		return output
 
 	def edit_playlist(self, attr):
@@ -108,10 +108,10 @@ class User:
 				continue
 
 	def playPlaylist(self):
-		playlist = self.plist.get_next_songs(15)
+		playlist = self.plist.get_next_songs(5)
 		out = ''
 		for songList in playlist:
-			spotID = get_spotify_id(songList[0])
+			spotID = get_spotify_id(songList)
 			out += spotID
 			out+=','
 
@@ -121,7 +121,6 @@ class User:
 class ExistingUser(User):
 	def __init__(self, catalog):		
 
-			self.name = name
 			self.catalog = catalog
 			self.cat_id = self.catalog.id
 			self.item_id = len(self.catalog.get_item_dicts())
@@ -131,14 +130,13 @@ class SuperUser(User):
     def __init__(self, name): # list of catalogs
         self.catalog = create_new_profile(name)
         self.cat_id = self.catalog.id
-        self.id_track = 0
+        self.item_id = 0
         self.plist = None
 
     def addCatalog(self,catalog):
-        for item in catalog.get_item_dicts(results=100):
-            self.catalog.update([{'action':'update','item':item['request']}])
-            self.i = int(item['request']['item_id'])
-            item['request']['item_id'] = unicode(self.i+self.id_track)
-        self.id_track += len(catalog.get_item_dicts(results=100))
+        for item in catalog.get_item_dicts(results=100):       
+			item['request']['item_id'] = str(self.item_id)
+			self.add_artist(item['request']['artist_name'])
+			self.item_id += 1
 
 
