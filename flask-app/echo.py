@@ -44,17 +44,22 @@ class User:
 		# pickle.dump(user_info, pkl_file)
 		# pkl_file.close()
 
-	def add_artist(self, artist_name):
+	def add_artist(self, artist_names):
 		try:
-			artist_object = artist.Artist(artist_name)
-			item = [{ 'item':
-				{
-					'item_id' : str(self.item_id),
-					'artist_name' : artist_object.name
+			itemList =[]
+			for artist_name in artist_names:
+				artist_object = artist.Artist(artist_name)
+				item = { 'item':
+					{
+						'item_id' : str(self.item_id),
+						'artist_name' : artist_object.name
+					}
 				}
-			}]
-			self.catalog.update(item)
-			self.item_id += 1
+				itemList.append(item)
+				self.item_id += 1
+
+			self.catalog.update(itemList)
+				
 		except:
 			print 'artist not found'
 
@@ -127,15 +132,16 @@ class ExistingUser(User):
 			self.plist = None
 
 class SuperUser(User):
-    def __init__(self, name): # list of catalogs
-        self.catalog = create_new_profile(name)
-        self.cat_id = self.catalog.id
-        self.item_id = 0
-        self.plist = None
-
-    def addCatalog(self,catalog):
-        for item in catalog.get_item_dicts(results=100):
-            item['request']['item_id'] = str(self.item_id)
-            self.add_artist(item['request']['artist_name'])
-            self.item_id += 1
+	def __init__(self, name): # list of catalogs
+		self.catalog = create_new_profile(name)
+		self.cat_id = self.catalog.id
+		self.item_id = 0
+		self.plist = None
+		self.friends = []
+	def addCatalog(self,catalog):
+		itemList =[]
+		for item in catalog.get_item_dicts(results=100):
+			itemList.append(item['request']['artist_name'])
+			self.item_id += 1
+		self.add_artist([itemList])
 
