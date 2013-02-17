@@ -6,9 +6,9 @@ import pycurl
 
 config.ECHO_NEST_API_KEY="8IOOXXQIU4NHRY5DY"
 
-pkl_file = open('user_info.pkl', 'r')
-user_info = pickle.load(pkl_file)
-pkl_file.close()
+# pkl_file = open('user_info.pkl', 'r')
+# user_info = pickle.load(pkl_file)
+# pkl_file.close()
 
 def get_spotify_id(spot_song):
 	out = spot_song.get_tracks('spotify-WW')[0]['foreign_id'][17:]
@@ -20,24 +20,28 @@ def create_new_profile(name):
 
 class User:
 
-	def __init__(self, name):
-		self.catalog = create_new_profile(name)
+	def __init__(self, name, catalog=None):
+		if not catalog:
+			self.catalog = create_new_profile(name)
+			self.item_id = 0
+		else:
+			self.catalog = catalog
+			self.item_id = len(self.catalog.get_item_dicts())
 		self.cat_id = self.catalog.id
 		self.name = name
-		self.item_id = 0
-		user_info[self.name] = str(self.cat_id)
-		pkl_file = open('user_info.pkl', 'w')
-		pickle.dump(user_info, pkl_file)
-		pkl_file.close()
+		# user_info[self.name] = str(self.cat_id)
+		# pkl_file = open('user_info.pkl', 'w')
+		# pickle.dump(user_info, pkl_file)
+		# pkl_file.close()
 		self.plist = None
-		print 'user created!', name
+		# print 'user created!', name
 
 	def delete(self):
 		self.catalog.delete()
 		del(user_info[self.name])
-		pkl_file = open('user_info.pkl', 'w')
-		pickle.dump(user_info, pkl_file)
-		pkl_file.close()
+		# pkl_file = open('user_info.pkl', 'w')
+		# pickle.dump(user_info, pkl_file)
+		# pkl_file.close()
 
 	def add_artist(self, artist_name):
 		try:
@@ -116,17 +120,13 @@ class User:
 		
 
 class ExistingUser(User):
-	def __init__(self, name):
-		try:
-			self.cat_id = user_info[name]
+	def __init__(self, catalog):		
+
 			self.name = name
-			self.catalog = catalog.Catalog(self.cat_id)
+			self.catalog = catalog
+			self.cat_id = self.catalog.id
 			self.item_id = len(self.catalog.get_item_dicts())
 			self.plist = None
-		except:
-
-			print name, ': user not found'
-			return None
 
 class SuperUser(User):
     def __init__(self, name): # list of catalogs

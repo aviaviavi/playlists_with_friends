@@ -209,10 +209,15 @@ def index():
                    % (redir, FB_APP_ID, get_home()))
 
         url = request.url
-        try:
-            cat_id = user_info[identifier['id']]
-            user_object = ExistingUser(identifier['id'])
-        except:
+
+        
+        user_object = None
+        catalogs = catalog.list_catalogs()
+        for c in catalogs:
+            if c.name == identifier['id']:
+                user_object = User(identifier['id'], c)
+                break
+        if not user_object:
             user_object = User(identifier['id'])
             user_object.get_fb_likes(music)
         
